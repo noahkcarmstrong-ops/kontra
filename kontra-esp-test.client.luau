@@ -14,6 +14,31 @@ local connections = {}
 local highlights = {}
 local characterConnections = {}
 
+local function report()
+    local others, models, parts, visibleParts = 0, 0, 0, 0
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= Players.LocalPlayer then
+            others += 1
+            local character = player.Character
+            if character then
+                models += 1
+                for _, object in ipairs(character:GetDescendants()) do
+                    if object:IsA("BasePart") then
+                        parts += 1
+                        if object.Transparency < 1 and object.LocalTransparencyModifier < 1 then
+                            visibleParts += 1
+                        end
+                    end
+                end
+                print("[Kontra ESP] Character: " .. character:GetFullName()
+                    .. "; in workspace: " .. tostring(character:IsDescendantOf(workspace)))
+            end
+        end
+    end
+    print(string.format("[Kontra ESP] Targets: %d other players, %d character models, %d parts, %d visible parts.",
+        others, models, parts, visibleParts))
+end
+
 local function clear(player)
     if highlights[player] then
         highlights[player]:Destroy()
@@ -55,4 +80,7 @@ table.insert(connections, Players.PlayerRemoving:Connect(function(player)
     end
 end))
 for _, player in ipairs(Players:GetPlayers()) do watch(player) end
-print("[Kontra ESP] Player highlights enabled. Run again to stop.")
+print("[Kontra ESP] Diagnostic v2 started. Run again to stop.")
+task.delay(3, function()
+    if container.Parent then report() end
+end)
