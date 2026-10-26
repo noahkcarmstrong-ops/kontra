@@ -2,8 +2,6 @@
 local Players = game:GetService("Players")
 local Input = game:GetService("UserInputService")
 local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
-local old = playerGui:FindFirstChild("KontraMenu")
-if old then old:Destroy() end
 
 local accent = Color3.fromRGB(255, 126, 66)
 local muted = Color3.fromRGB(148, 152, 163)
@@ -31,7 +29,7 @@ local function button(parent, text, position, size)
 end
 
 local gui = make("ScreenGui", {Name = "KontraMenu", ResetOnSpawn = false,
-    ZIndexBehavior = Enum.ZIndexBehavior.Sibling, DisplayOrder = 20}, playerGui)
+    ZIndexBehavior = Enum.ZIndexBehavior.Sibling, DisplayOrder = 20}, nil)
 local window = make("Frame", {
     Name = "Window", AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5),
     Size = UDim2.fromOffset(640, 390), BackgroundColor3 = Color3.fromRGB(21, 23, 29), BorderSizePixel = 0,
@@ -138,3 +136,8 @@ gui.Destroying:Connect(function()
     cameraChanged:Disconnect()
     if cameraConnection then cameraConnection:Disconnect() end
 end)
+
+-- Build the entire panel before mounting it; keep the previous panel if setup fails.
+local old = playerGui:FindFirstChild("KontraMenu")
+if old then old:Destroy() end
+gui.Parent = playerGui
